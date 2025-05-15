@@ -135,7 +135,7 @@
         num = parseInt(num);
         let done = false;
         for (let i = 1; i <= num; i++) {
-          history.pushState(0, 0, i === num ? "/f/canvas" : "/f/canvas?"+i);
+          history.pushState(0, 0, i === num ? "/f/canvas.html" : "/f/canvas.html?"+i);
           if (i === num) done = true;
         }
 
