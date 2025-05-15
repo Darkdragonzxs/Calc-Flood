@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://i.postimg.cc/ydnq9QzB/Screenshot-2025-05-13-12-03-53-PM-removebg-preview.png" type="image/png">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle at center, #000 0%, #030303 100%);
+      color: #0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .calculator {
+      background: #111;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #0f0;
+      width: 300px;
+    }
+
+    #display {
+      width: 100%;
+      font-size: 2em;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: right;
+      background: #000;
+      color: #0f0;
+      border: 2px solid #0f0;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .buttons button {
+      font-size: 1.4em;
+      padding: 15px;
+      background: #222;
+      color: #0f0;
+      border: 1px solid #0f0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .buttons button:hover {
+      background: #0f0;
+      color: #000;
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #0f0;
+    }
+
+    .clear-btn {
+      grid-column: span 4;
+      background: #f00;
+      color: #fff;
+      border: 1px solid #f00;
+    }
+
+    .clear-btn:hover {
+      background: #fff;
+      color: #f00;
+      box-shadow: 0 0 10px #f00;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" id="display" readonly placeholder="0">
+    <div class="buttons">
+      <button onclick="press('7')">7</button>
+      <button onclick="press('8')">8</button>
+      <button onclick="press('9')">9</button>
+      <button onclick="press('/')">÷</button>
+
+      <button onclick="press('4')">4</button>
+      <button onclick="press('5')">5</button>
+      <button onclick="press('6')">6</button>
+      <button onclick="press('*')">×</button>
+
+      <button onclick="press('1')">1</button>
+      <button onclick="press('2')">2</button>
+      <button onclick="press('3')">3</button>
+      <button onclick="press('-')">−</button>
+
+      <button onclick="press('0')">0</button>
+      <button onclick="press('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="press('+')">+</button>
+
+      <button class="clear-btn" onclick="clearDisplay()">Clear</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+
+    function press(val) {
+      display.value += val;
+    }
+
+    function calculate() {
+      try {
+        display.value = eval(display.value);
+      } catch {
+        display.value = 'Error';
+      }
+    }
+
+    function clearDisplay() {
+      display.value = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === ']') {
+        let num = prompt("History flood amount:");
+        if (!num || isNaN(num)) return;
+
+        num = parseInt(num);
+        let done = false;
+        for (let i = 1; i <= num; i++) {
+          history.pushState(0, 0, i === num ? "/f/canvas" : "/f/canvas?"+i);
+          if (i === num) done = true;
+        }
+
+        if (done) {
+          alert("History flood successful! /f/canvas now appears in your history " + num + (num === 1 ? " time." : " times. (ajaxdev)"));
+        }
+      }
+    });
+  </script>
+</body>
+</html>
