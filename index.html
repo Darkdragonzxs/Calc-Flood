@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scientific Calculator</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <link rel="icon" href="https://i.postimg.cc/ydnq9QzB/Screenshot-2025-05-13-12-03-53-PM-removebg-preview.png" type="image/png">
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
@@ -17,49 +20,133 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
+      padding: 1rem;
     }
 
     .calculator {
       background: #111;
-      padding: 30px;
-      border-radius: 15px;
+      padding: 1.5rem;
+      border-radius: 1rem;
       box-shadow: 0 0 20px #0f0;
-      width: 300px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .calculator-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #222;
+      color: #0f0;
+      border: 1px solid #0f0;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+    }
+
+    .toggle-btn:hover {
+      background: #0f0;
+      color: #000;
+    }
+
+    .history-panel {
+      background: #000;
+      border: 1px solid #0f0;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      max-height: 8rem;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .history-item {
+      text-align: right;
+      margin-bottom: 0.25rem;
+      padding: 0.25rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: #222;
+    }
+
+    .display-container {
+      margin-bottom: 1rem;
     }
 
     #display {
       width: 100%;
-      font-size: 2em;
-      padding: 15px;
-      margin-bottom: 20px;
+      font-size: 1.5rem;
+      padding: 1rem;
       text-align: right;
       background: #000;
       color: #0f0;
       border: 2px solid #0f0;
-      border-radius: 10px;
+      border-radius: 0.5rem;
       outline: none;
+      font-family: 'Orbitron', sans-serif;
     }
 
-    .buttons {
+    .result {
+      text-align: right;
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+      padding-right: 0.5rem;
+    }
+
+    .scientific-options,
+    .memory-functions,
+    .scientific-functions {
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
+      gap: 0.75rem;
     }
 
-    .buttons button {
-      font-size: 1.4em;
-      padding: 15px;
+    .grid-cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .grid-cols-5 {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .col-span-2 {
+      grid-column: span 2;
+    }
+
+    .button {
+      font-size: 1.2rem;
+      padding: 1rem;
       background: #222;
       color: #0f0;
       border: 1px solid #0f0;
-      border-radius: 10px;
+      border-radius: 0.5rem;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .buttons button:hover {
+    .button:hover {
       background: #0f0;
       color: #000;
       transform: scale(1.05);
@@ -67,7 +154,6 @@
     }
 
     .clear-btn {
-      grid-column: span 4;
       background: #f00;
       color: #fff;
       border: 1px solid #f00;
@@ -78,56 +164,366 @@
       color: #f00;
       box-shadow: 0 0 10px #f00;
     }
+
+    .small-button {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+    }
+
+    .active-mode {
+      background: #0f0;
+      color: #000;
+    }
+
+    .footer-text {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.7rem;
+    }
+
+    /* Custom scrollbar */
+    .history-panel::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .history-panel::-webkit-scrollbar-track {
+      background: #000;
+      border-radius: 4px;
+    }
+
+    .history-panel::-webkit-scrollbar-thumb {
+      background: #0f0;
+      border-radius: 4px;
+    }
+
+    .history-panel::-webkit-scrollbar-thumb:hover {
+      background: #00ff00aa;
+    }
+
+    /* Glowing effect */
+    @keyframes glow {
+      0% {
+        box-shadow: 0 0 5px #0f0;
+      }
+      50% {
+        box-shadow: 0 0 15px #0f0, 0 0 30px #0f0;
+      }
+      100% {
+        box-shadow: 0 0 5px #0f0;
+      }
+    }
+
+    .button:hover {
+      animation: glow 1.5s infinite;
+    }
   </style>
 </head>
 <body>
   <div class="calculator">
-    <input type="text" id="display" readonly placeholder="0">
-    <div class="buttons">
-      <button onclick="press('7')">7</button>
-      <button onclick="press('8')">8</button>
-      <button onclick="press('9')">9</button>
-      <button onclick="press('/')">÷</button>
-
-      <button onclick="press('4')">4</button>
-      <button onclick="press('5')">5</button>
-      <button onclick="press('6')">6</button>
-      <button onclick="press('*')">×</button>
-
-      <button onclick="press('1')">1</button>
-      <button onclick="press('2')">2</button>
-      <button onclick="press('3')">3</button>
-      <button onclick="press('-')">−</button>
-
-      <button onclick="press('0')">0</button>
-      <button onclick="press('.')">.</button>
-      <button onclick="calculate()">=</button>
-      <button onclick="press('+')">+</button>
-
-      <button class="clear-btn" onclick="clearDisplay()">Clear</button>
+    <div class="calculator-header">
+      <button id="toggle-scientific" class="toggle-btn">
+        <span class="icon">📊</span>
+        <span id="mode-text">Scientific</span>
+      </button>
+      <button id="toggle-history" class="toggle-btn">
+        <span class="icon">📜</span>
+        <span id="history-icon">▼</span>
+      </button>
     </div>
+
+    <div id="history-panel" class="history-panel">
+      <p id="no-history" class="text-center">No history yet</p>
+      <div id="history-items"></div>
+    </div>
+
+    <div class="display-container">
+      <input type="text" id="display" readonly placeholder="0">
+      <div id="result" class="result"></div>
+    </div>
+
+    <div id="scientific-options" class="scientific-options">
+      <div class="grid grid-cols-4">
+        <button id="toggle-rad-deg" class="button small-button">RAD</button>
+        <button class="button small-button" onclick="press('π')">π</button>
+        <button class="button small-button" onclick="press('e')">e</button>
+        <button class="button small-button" onclick="handleScientificFunction('factorial')">x!</button>
+      </div>
+    </div>
+
+    <div id="memory-functions" class="memory-functions">
+      <div class="grid grid-cols-5">
+        <button class="button small-button" onclick="handleMemoryFunction('MC')">MC</button>
+        <button class="button small-button" onclick="handleMemoryFunction('MR')">MR</button>
+        <button class="button small-button" onclick="handleMemoryFunction('M+')">M+</button>
+        <button class="button small-button" onclick="handleMemoryFunction('M-')">M-</button>
+        <button class="button small-button" onclick="handleMemoryFunction('MS')">MS</button>
+      </div>
+    </div>
+
+    <div id="scientific-functions" class="scientific-functions">
+      <div class="grid grid-cols-4">
+        <button class="button small-button" onclick="handleScientificFunction('sin')">sin</button>
+        <button class="button small-button" onclick="handleScientificFunction('cos')">cos</button>
+        <button class="button small-button" onclick="handleScientificFunction('tan')">tan</button>
+        <button class="button small-button" onclick="handleScientificFunction('log')">log</button>
+        <button class="button small-button" onclick="handleScientificFunction('ln')">ln</button>
+        <button class="button small-button" onclick="handleScientificFunction('sqrt')">√x</button>
+        <button class="button small-button" onclick="handleScientificFunction('cbrt')">∛x</button>
+        <button class="button small-button" onclick="handleScientificFunction('square')">x²</button>
+        <button class="button small-button" onclick="handleScientificFunction('cube')">x³</button>
+        <button class="button small-button" onclick="handleScientificFunction('power')">xⁿ</button>
+        <button class="button small-button" onclick="press('(')">(</button>
+        <button class="button small-button" onclick="press(')')">)</button>
+      </div>
+    </div>
+
+    <div class="buttons grid grid-cols-4">
+      <button class="button clear-btn col-span-2" onclick="clearDisplay()">AC</button>
+      <button class="button" onclick="clearEntry()">⌫</button>
+      <button class="button" onclick="press('÷')">÷</button>
+
+      <button class="button" onclick="press('7')">7</button>
+      <button class="button" onclick="press('8')">8</button>
+      <button class="button" onclick="press('9')">9</button>
+      <button class="button" onclick="press('×')">×</button>
+
+      <button class="button" onclick="press('4')">4</button>
+      <button class="button" onclick="press('5')">5</button>
+      <button class="button" onclick="press('6')">6</button>
+      <button class="button" onclick="press('−')">−</button>
+
+      <button class="button" onclick="press('1')">1</button>
+      <button class="button" onclick="press('2')">2</button>
+      <button class="button" onclick="press('3')">3</button>
+      <button class="button" onclick="press('+')">+</button>
+
+      <button class="button" onclick="press('0')">0</button>
+      <button class="button" onclick="press('.')">.</button>
+      <button class="button" onclick="press('%')">%</button>
+      <button class="button" onclick="calculate()">=</button>
+    </div>
+
+    
   </div>
 
   <script>
+    // DOM Elements
     const display = document.getElementById('display');
+    const resultElement = document.getElementById('result');
+    const historyPanel = document.getElementById('history-panel');
+    const historyItems = document.getElementById('history-items');
+    const noHistory = document.getElementById('no-history');
+    const toggleScientific = document.getElementById('toggle-scientific');
+    const toggleHistory = document.getElementById('toggle-history');
+    const modeText = document.getElementById('mode-text');
+    const historyIcon = document.getElementById('history-icon');
+    const toggleRadDeg = document.getElementById('toggle-rad-deg');
+    const scientificOptions = document.getElementById('scientific-options');
+    const memoryFunctions = document.getElementById('memory-functions');
+    const scientificFunctions = document.getElementById('scientific-functions');
 
+    // State
+    let isScientific = false;
+    let showHistory = false;
+    let isRadians = true;
+    let memory = 0;
+    let history = [];
+
+    // Event Listeners
+    toggleScientific.addEventListener('click', () => {
+      isScientific = !isScientific;
+      modeText.textContent = isScientific ? 'Basic' : 'Scientific';
+      
+      // Toggle scientific sections
+      scientificOptions.style.display = isScientific ? 'block' : 'none';
+      memoryFunctions.style.display = isScientific ? 'block' : 'none';
+      scientificFunctions.style.display = isScientific ? 'block' : 'none';
+    });
+
+    toggleHistory.addEventListener('click', () => {
+      showHistory = !showHistory;
+      historyIcon.textContent = showHistory ? '▲' : '▼';
+      historyPanel.style.display = showHistory ? 'block' : 'none';
+    });
+
+    toggleRadDeg.addEventListener('click', () => {
+      isRadians = !isRadians;
+      toggleRadDeg.textContent = isRadians ? 'RAD' : 'DEG';
+      toggleRadDeg.classList.toggle('active-mode');
+    });
+
+    // Calculator Functions
     function press(val) {
       display.value += val;
     }
 
+    function clearDisplay() {
+      display.value = '';
+      resultElement.textContent = '';
+    }
+
+    function clearEntry() {
+      display.value = display.value.slice(0, -1);
+    }
+
     function calculate() {
       try {
-        display.value = eval(display.value);
-      } catch {
+        // Replace mathematical symbols with JavaScript operators
+        let expression = display.value
+          .replace(/×/g, "*")
+          .replace(/÷/g, "/")
+          .replace(/−/g, "-")
+          .replace(/π/g, "Math.PI")
+          .replace(/e/g, "Math.E")
+          .replace(/%/g, "/100");
+
+        // Handle scientific functions
+        expression = expression
+          .replace(/sin\(/g, `Math.${isRadians ? "sin" : "sin"}(`)
+          .replace(/cos\(/g, `Math.${isRadians ? "cos" : "cos"}(`)
+          .replace(/tan\(/g, `Math.${isRadians ? "tan" : "tan"}(`)
+          .replace(/log\(/g, "Math.log10(")
+          .replace(/ln\(/g, "Math.log(")
+          .replace(/sqrt\(/g, "Math.sqrt(")
+          .replace(/cbrt\(/g, "Math.cbrt(")
+          .replace(/\^/g, "**");
+
+        // If not in radians, convert degrees to radians for trig functions
+        if (!isRadians) {
+          expression = expression
+            .replace(/Math\.sin$$(.*?)$$/g, "Math.sin($1 * Math.PI / 180)")
+            .replace(/Math\.cos$$(.*?)$$/g, "Math.cos($1 * Math.PI / 180)")
+            .replace(/Math\.tan$$(.*?)$$/g, "Math.tan($1 * Math.PI / 180)");
+        }
+
+        const calculatedResult = eval(expression);
+        const formattedResult = Number.isInteger(calculatedResult)
+          ? calculatedResult.toString()
+          : Number.parseFloat(calculatedResult.toFixed(8)).toString();
+
+        resultElement.textContent = `= ${formattedResult}`;
+        addToHistory(`${display.value} = ${formattedResult}`);
+        display.value = formattedResult;
+      } catch (error) {
+        resultElement.textContent = 'Error';
         display.value = 'Error';
       }
     }
 
-    function clearDisplay() {
-      display.value = '';
+    function handleScientificFunction(func) {
+      if (["sin", "cos", "tan", "log", "ln", "sqrt", "cbrt"].includes(func)) {
+        press(`${func}(`);
+      } else if (func === "square") {
+        press("^2");
+      } else if (func === "cube") {
+        press("^3");
+      } else if (func === "power") {
+        press("^");
+      } else if (func === "factorial") {
+        calculateFactorial();
+      }
     }
 
+    function calculateFactorial() {
+      try {
+        const num = Number.parseFloat(display.value);
+        if (num < 0 || !Number.isInteger(num)) {
+          throw new Error("Invalid input for factorial");
+        }
+
+        let result = 1;
+        for (let i = 2; i <= num; i++) {
+          result *= i;
+        }
+
+        display.value = result.toString();
+        resultElement.textContent = `= ${result}`;
+        addToHistory(`${num}! = ${result}`);
+      } catch (error) {
+        resultElement.textContent = 'Error';
+        display.value = 'Error';
+      }
+    }
+
+    function handleMemoryFunction(action) {
+      try {
+        const currentValue = display.value ? Number.parseFloat(display.value) : 0;
+
+        switch (action) {
+          case "MC":
+            memory = 0;
+            break;
+          case "MR":
+            display.value = memory.toString();
+            break;
+          case "M+":
+            memory += currentValue;
+            break;
+          case "M-":
+            memory -= currentValue;
+            break;
+          case "MS":
+            memory = currentValue;
+            break;
+        }
+      } catch (error) {
+        // Handle error silently
+      }
+    }
+
+    function addToHistory(item) {
+      history.push(item);
+      updateHistoryDisplay();
+    }
+
+    function updateHistoryDisplay() {
+      if (history.length === 0) {
+        noHistory.style.display = 'block';
+        historyItems.innerHTML = '';
+        return;
+      }
+
+      noHistory.style.display = 'none';
+      historyItems.innerHTML = '';
+
+      history.forEach((item, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.textContent = item;
+        historyItem.addEventListener('click', () => {
+          display.value = item.split(' = ')[0];
+        });
+        historyItems.appendChild(historyItem);
+      });
+    }
+
+    // Keyboard support
     document.addEventListener('keydown', function(e) {
+      if (/[0-9]/.test(e.key)) {
+        press(e.key);
+      } else if (e.key === '+') {
+        press('+');
+      } else if (e.key === '-') {
+        press('−');
+      } else if (e.key === '*') {
+        press('×');
+      } else if (e.key === '/') {
+        press('÷');
+      } else if (e.key === '.') {
+        press('.');
+      } else if (e.key === 'Enter' || e.key === '=') {
+        calculate();
+      } else if (e.key === 'Backspace') {
+        clearEntry();
+      } else if (e.key === 'Escape') {
+        clearDisplay();
+      } else if (e.key === '(' || e.key === ')') {
+        press(e.key);
+      } else if (e.key === '%') {
+        press('%');
+      }
+
+      // History flood functionality
       if (e.key === ']') {
         let num = prompt("History flood amount:");
         if (!num || isNaN(num)) return;
