@@ -541,45 +541,48 @@
       }
     });
     </script>
-<script>
-  const ALERT_API_KEY = "AIzaSyDSyt5Rb5TJ_2ultdGeR6y9Et65o9W7Xtk"; // Replace with your Gemini API key
-  const ALERT_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${ALERT_API_KEY}`;
+<script><script>
+  // Replace with your OpenAI API key
+  const ALERT_API_KEY = "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";  
+  const ALERT_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
   async function chatLoop() {
     let userMessage = prompt("Ask ZXS AI something:");
     if (!userMessage) return;
 
     let history = [
-      { role: "user", parts: [{ text: userMessage }] }
+      { role: "system", content: "You are ZXS AI, a helpful assistant with a neon cyberpunk personality." },
+      { role: "user", content: userMessage }
     ];
-
-    let lastReply = "";
 
     while (true) {
       try {
         const res = await fetch(ALERT_API_ENDPOINT, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: history })
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${ALERT_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini", // lightweight but smart
+            messages: history,
+            temperature: 0.9
+          })
         });
 
         if (!res.ok) throw new Error("API error " + res.status);
 
         const data = await res.json();
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Alert AI failed.";
+        const reply = data.choices?.[0]?.message?.content || "⚠️ AI failed to reply.";
 
-        lastReply = reply;
-        // Show AI response directly
         alert("🤖 ZXS AI says:\n\n" + reply);
 
-        // Save conversation history
-        history.push({ role: "model", parts: [{ text: reply }] });
+        history.push({ role: "assistant", content: reply });
 
-        // Ask user for the next input, showing last reply
         userMessage = prompt("🤖 Last AI reply:\n\n" + reply + "\n\n💬 Your reply (Cancel to end):");
         if (!userMessage) break;
 
-        history.push({ role: "user", parts: [{ text: userMessage }] });
+        history.push({ role: "user", content: userMessage });
 
       } catch (err) {
         console.error(err);
@@ -594,6 +597,8 @@
       chatLoop();
     }
   });
+</script>
+
   </script>
 </body>
 </html>
