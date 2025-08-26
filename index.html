@@ -541,30 +541,32 @@
       }
     });
     </script>
-<script><script>
-  // Replace with your OpenAI API key
-  const ALERT_API_KEY = "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";  
-  const ALERT_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+<script>
+  // ⚠️ For testing only! Replace with your real API key.
+  // Do NOT expose this on a public site.
+  const OPENAI_API_KEY = "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";  
+  const OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
   async function chatLoop() {
     let userMessage = prompt("Ask ZXS AI something:");
     if (!userMessage) return;
 
     let history = [
-      { role: "system", content: "You are ZXS AI, a helpful assistant with a neon cyberpunk personality." },
+      { role: "system", content: "You are ZXS AI, you are cool yet somewhat mean but use " },
       { role: "user", content: userMessage }
     ];
 
     while (true) {
       try {
-        const res = await fetch(ALERT_API_ENDPOINT, {
+        // Send request to OpenAI
+        const res = await fetch(OPENAI_ENDPOINT, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${ALERT_API_KEY}`
+            "Authorization": `Bearer ${OPENAI_API_KEY}`
           },
           body: JSON.stringify({
-            model: "gpt-4o-mini", // lightweight but smart
+            model: "gpt-4o-mini",  // lightweight + smart
             messages: history,
             temperature: 0.9
           })
@@ -575,10 +577,13 @@
         const data = await res.json();
         const reply = data.choices?.[0]?.message?.content || "⚠️ AI failed to reply.";
 
+        // Show response
         alert("🤖 ZXS AI says:\n\n" + reply);
 
+        // Add to history
         history.push({ role: "assistant", content: reply });
 
+        // Ask user again
         userMessage = prompt("🤖 Last AI reply:\n\n" + reply + "\n\n💬 Your reply (Cancel to end):");
         if (!userMessage) break;
 
@@ -592,13 +597,12 @@
     }
   }
 
+  // Bind to "[" key
   document.addEventListener("keydown", (e) => {
     if (e.key === "[") {
       chatLoop();
     }
   });
 </script>
-
-  </script>
 </body>
 </html>
